@@ -26,31 +26,25 @@ class RoomInventory {
 
 class SingleRoom {
     public void displayRoomDetails() {
-        System.out.println("Room Type: Single Room");
         System.out.println("Beds: 1");
-        System.out.println("Capacity: 1 person");
         System.out.println("Size: 250 sqft");
-        System.out.println("Price per night: $50/night");
+        System.out.println("Price per night:1500.0");
     }
 }
 
 class DoubleRoom {
     public void displayRoomDetails() {
-        System.out.println("Room Type: Double Room");
         System.out.println("Beds: 2");
-        System.out.println("Capacity: 2 persons");
         System.out.println("Size: 400 sqft");
-        System.out.println("Price per night: $80/night");
+        System.out.println("Price per night:2500.0");
     }
 }
 
 class SuiteRoom {
     public void displayRoomDetails() {
-        System.out.println("Room Type: Suite");
         System.out.println("Beds:3");
-        System.out.println("Capacity: 4 persons");
         System.out.println("Size: 750 sqft");
-        System.out.println("Price per night: $150/night");
+        System.out.println("Price per night:5000.0");
     }
 }
 
@@ -63,16 +57,16 @@ public class BookMyStayApp {
 
         System.out.println("Single Room:");
         singleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("Single"));
+        System.out.println("Available : " + inventory.getRoomAvailability().get("Single"));
         System.out.println();
 
         System.out.println("Double Room:");
         doubleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("Double"));
+        System.out.println("Available : " + inventory.getRoomAvailability().get("Double"));
         System.out.println();
 
         System.out.println("Suite Room:");
         suiteRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("Suite"));
+        System.out.println("Available : " + inventory.getRoomAvailability().get("Suite"));
     }
 }
