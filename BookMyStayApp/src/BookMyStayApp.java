@@ -55,7 +55,7 @@ class BookingReportService {
     }
 }
 
-class Main {
+class BookMyStayApp {
     public static void main(String[] args) {
 
         String appName = "Book My Stay App";
