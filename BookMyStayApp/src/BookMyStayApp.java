@@ -11,6 +11,29 @@ class Reservation {
         this.roomType = roomType;
     }
 
+
+class SingleRoom extends Room {
+    public void displayRoomDetails() {
+        System.out.println("Beds:1");
+        System.out.println("Size:250 sqft");
+        System.out.println("Price per night:1500.0");
+    }
+}
+
+class DoubleRoom extends Room {
+    public void displayRoomDetails() {
+        System.out.println("Beds:2");
+        System.out.println("Size:400 sqft");
+        System.out.println("Price per night:2500.0");
+    }
+}
+
+class SuiteRoom extends Room {
+    public void displayRoomDetails() {
+        System.out.println("Beds:3");
+        System.out.println("Size:750 sqft");
+        System.out.println("Price per night:5000.0");
+
     void display() {
         System.out.println("ID: " + reservationId +
                 " | Guest: " + guestName +
@@ -69,6 +92,7 @@ class BookingRequestQueue {
 
     public boolean hasPendingRequests() {
         return !requestQueue.isEmpty();
+
     }
 }
 
