@@ -26,25 +26,31 @@ class RoomInventory {
 
 class SingleRoom {
     public void displayRoomDetails() {
-        System.out.println("Room Type: Single");
+        System.out.println("Room Type: Single Room");
+        System.out.println("Beds: 1");
         System.out.println("Capacity: 1 person");
-        System.out.println("Price: $50/night");
+        System.out.println("Size: 250 sqft");
+        System.out.println("Price per night: $50/night");
     }
 }
 
 class DoubleRoom {
     public void displayRoomDetails() {
-        System.out.println("Room Type: Double");
+        System.out.println("Room Type: Double Room");
+        System.out.println("Beds: 2");
         System.out.println("Capacity: 2 persons");
-        System.out.println("Price: $80/night");
+        System.out.println("Size: 400 sqft");
+        System.out.println("Price per night: $80/night");
     }
 }
 
 class SuiteRoom {
     public void displayRoomDetails() {
         System.out.println("Room Type: Suite");
+        System.out.println("Beds:3");
         System.out.println("Capacity: 4 persons");
-        System.out.println("Price: $150/night");
+        System.out.println("Size: 750 sqft");
+        System.out.println("Price per night: $150/night");
     }
 }
 
