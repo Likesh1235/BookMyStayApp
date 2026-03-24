@@ -1,72 +1,78 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-class RoomInventory {
-    private final Map<String, Integer> roomAvailability;
+class Reservation {
+    String reservationId;
+    String guestName;
+    String roomType;
 
-    public RoomInventory() {
-        roomAvailability = new HashMap<>();
-        initializeInventory();
-    }
-
-    private void initializeInventory() {
-        roomAvailability.put("Single", 5);
-        roomAvailability.put("Double", 3);
-        roomAvailability.put("Suite", 2);
-    }
-
-    public Map<String, Integer> getRoomAvailability() {
-        return roomAvailability;
-    }
-
-    public void updateAvailability(String roomType, int count) {
-        roomAvailability.put(roomType, count);
+    Reservation(String reservationId, String guestName, String roomType) {
+        this.reservationId = reservationId;
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 }
 
-class SingleRoom {
-    public void displayRoomDetails() {
-        System.out.println("Beds: 1");
-        System.out.println("Size: 250 sqft");
-        System.out.println("Price per night:1500.0");
+class Service {
+    String serviceName;
+    double cost;
+
+    Service(String serviceName, double cost) {
+        this.serviceName = serviceName;
+        this.cost = cost;
     }
 }
 
-class DoubleRoom {
-    public void displayRoomDetails() {
-        System.out.println("Beds: 2");
-        System.out.println("Size: 400 sqft");
-        System.out.println("Price per night:2500.0");
+class AddOnServiceManager {
+    private Map<String, List<Service>> serviceMap = new HashMap<>();
+
+    void addService(String reservationId, Service service) {
+        serviceMap.putIfAbsent(reservationId, new ArrayList<>());
+        serviceMap.get(reservationId).add(service);
+    }
+
+    void displayServices(String reservationId) {
+        List<Service> services = serviceMap.get(reservationId);
+
+        if (services == null || services.isEmpty()) {
+            System.out.println("No services selected.");
+            return;
+        }
+
+        double total = 0;
+        System.out.println("Services for Reservation " + reservationId + ":");
+
+        for (Service s : services) {
+            System.out.println("- " + s.serviceName + " : $" + s.cost);
+            total += s.cost;
+        }
+
+        System.out.println("Total Add-On Cost: $" + total);
     }
 }
 
-class SuiteRoom {
-    public void displayRoomDetails() {
-        System.out.println("Beds:3");
-        System.out.println("Size: 750 sqft");
-        System.out.println("Price per night:5000.0");
-    }
-}
-
-public class BookMyStayApp {
+class Main {
     public static void main(String[] args) {
-        RoomInventory inventory = new RoomInventory();
-        SingleRoom singleRoom = new SingleRoom();
-        DoubleRoom doubleRoom = new DoubleRoom();
-        SuiteRoom suiteRoom = new SuiteRoom();
 
-        System.out.println("Single Room:");
-        singleRoom.displayRoomDetails();
-        System.out.println("Available : " + inventory.getRoomAvailability().get("Single"));
-        System.out.println();
+        String appName = "Book My Stay App";
+        String version = "Hotel Booking System v7.0";
 
-        System.out.println("Double Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available : " + inventory.getRoomAvailability().get("Double"));
-        System.out.println();
+        System.out.println("=====================================");
+        System.out.println("        " + appName);
+        System.out.println("=====================================");
+        System.out.println("Version: " + version);
+        System.out.println("-------------------------------------");
 
-        System.out.println("Suite Room:");
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available : " + inventory.getRoomAvailability().get("Suite"));
+        Reservation r1 = new Reservation("R101", "Alice", "Single Room");
+
+        AddOnServiceManager manager = new AddOnServiceManager();
+
+        manager.addService("R101", new Service("Breakfast", 20));
+        manager.addService("R101", new Service("Airport Pickup", 50));
+        manager.addService("R101", new Service("Extra Bed", 30));
+
+        manager.displayServices("R101");
+
+        System.out.println("-------------------------------------");
+        System.out.println("System execution completed.");
     }
 }
