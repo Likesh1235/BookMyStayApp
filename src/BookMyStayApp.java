@@ -1,51 +1,63 @@
 import java.util.*;
 
-public class HotelBookingAPP {
-    private HashMap<String, Integer> inventory;
-    private HashMap<String, String> activeBookings;
-    private Stack<String> rollbackStack;
+class Reservation {
+    String guestName;
+    String roomType;
 
-    public HotelBookingAPP() {
-        inventory = new HashMap<>();
-        activeBookings = new HashMap<>();
-        rollbackStack = new Stack<>();
+    public Reservation(String guestName, String roomType) {
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
+}
+
+public class BookMyStayApp {
+    private HashMap<String, Integer> inventory = new HashMap<>();
+    private Queue<Reservation> bookingQueue = new LinkedList<>();
 
     public void addRoomType(String type, int count) {
         inventory.put(type, count);
     }
 
-    public void confirmBooking(String roomId, String roomType) {
-        if (inventory.containsKey(roomType) && inventory.get(roomType) > 0) {
-            inventory.put(roomType, inventory.get(roomType) - 1);
-            activeBookings.put(roomId, roomType);
-            System.out.println("Booking confirmed: " + roomId);
+    public synchronized void addRequest(Reservation r) {
+        bookingQueue.add(r);
+    }
+
+    public synchronized void processBooking() {
+        if (bookingQueue.isEmpty()) return;
+        Reservation r = bookingQueue.poll();
+        int available = inventory.getOrDefault(r.roomType, 0);
+        if (available > 0) {
+            inventory.put(r.roomType, available - 1);
+            System.out.println(Thread.currentThread().getName() +
+                    " SUCCESS: " + r.guestName + " booked " + r.roomType);
+        } else {
+            System.out.println(Thread.currentThread().getName() +
+                    " FAILED: " + r.guestName + " (No rooms)");
         }
     }
 
-    public void cancelBooking(String roomId) {
-        if (!activeBookings.containsKey(roomId)) {
-            System.out.println("Cancellation failed: Invalid Room ID " + roomId);
-            return;
+    class BookingThread extends Thread {
+        public void run() {
+            while (true) {
+                synchronized (BookMyStayApp.this) {
+                    if (bookingQueue.isEmpty()) break;
+                }
+                processBooking();
+            }
         }
-        String roomType = activeBookings.get(roomId);
-        rollbackStack.push(roomId);
-        activeBookings.remove(roomId);
-        inventory.put(roomType, inventory.get(roomType) + 1);
-        System.out.println("Booking cancelled: " + roomId);
-    }
-
-    public void showRollbackStack() {
-        System.out.println("Rollback Stack: " + rollbackStack);
     }
 
     public static void main(String[] args) {
-        HotelBookingAPP app = new HotelBookingAPP();
+        BookMyStayApp app = new BookMyStayApp();
         app.addRoomType("Single", 2);
-        app.confirmBooking("Single-1", "Single");
-        app.confirmBooking("Single-2", "Single");
-        app.cancelBooking("Single-2");
-        app.cancelBooking("Single-3");
-        app.showRollbackStack();
+        app.addRequest(new Reservation("Abhi", "Single"));
+        app.addRequest(new Reservation("Subha", "Single"));
+        app.addRequest(new Reservation("Vanmathi", "Single"));
+        Thread t1 = app.new BookingThread();
+        Thread t2 = app.new BookingThread();
+        t1.setName("Thread-1");
+        t2.setName("Thread-2");
+        t1.start();
+        t2.start();
     }
 }
