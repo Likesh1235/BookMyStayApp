@@ -4,13 +4,12 @@ import java.util.*;
 public class BookMyStayApp {
 
 class Reservation {
-    String reservationId;
     String guestName;
-    String roomType;
+    String roomId;
 
-    Reservation(String reservationId, String guestName, String roomType) {
-        this.reservationId = reservationId;
+    public Reservation(String guestName, String roomId) {
         this.guestName = guestName;
+        this.roomId = roomId;
         this.roomType = roomType;
     }
 
@@ -77,18 +76,35 @@ class BookingHistory {
     }
 }
 
-class BookingRequestQueue {
+public class HotelBookingAPP {
+    private List<Reservation> bookingHistory;
 
-    private Queue<Reservation> requestQueue;
-
-    public BookingRequestQueue() {
-        requestQueue = new LinkedList<>();
+    public HotelBookingAPP() {
+        bookingHistory = new ArrayList<>();
     }
 
-    public void addRequest(Reservation reservation) {
-        requestQueue.offer(reservation);
+    public void addBooking(String guestName, String roomId) {
+        bookingHistory.add(new Reservation(guestName, roomId));
+    }
+    public void displayHistory() {
+        System.out.println("Booking History");
+        for (Reservation r : bookingHistory) {
+            System.out.println("Guest: " + r.guestName + ", Room ID: " + r.roomId);
+        }
     }
 
+    public void generateReport() {
+        System.out.println("\nBooking Report");
+        System.out.println("Total Bookings: " + bookingHistory.size());
+    }
+
+    public static void main(String[] args) {
+        HotelBookingAPP app = new HotelBookingAPP();
+        app.addBooking("Abhi", "Single-1");
+        app.addBooking("Subha", "Single-2");
+        app.addBooking("Vanmathi", "Suite-1");
+        app.displayHistory();
+        app.generateReport();
     public Reservation getNextRequest() {
         return requestQueue.poll();
     }
