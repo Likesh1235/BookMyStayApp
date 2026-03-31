@@ -1,63 +1,75 @@
+import java.io.*;
 import java.util.*;
 
-class Reservation {
+class Reservation implements Serializable {
     String guestName;
-    String roomType;
+    String roomId;
 
-    public Reservation(String guestName, String roomType) {
+    public Reservation(String guestName, String roomId) {
         this.guestName = guestName;
-        this.roomType = roomType;
+        this.roomId = roomId;
     }
 }
 
-public class BookMyStayApp {
-    private HashMap<String, Integer> inventory = new HashMap<>();
-    private Queue<Reservation> bookingQueue = new LinkedList<>();
+public class BookMyStayApp implements Serializable {
+    private HashMap<String, Integer> inventory;
+    private List<Reservation> bookingHistory;
+    private static final String FILE_NAME = "hotel_data.ser";
+
+    public BookMyStayApp() {
+        inventory = new HashMap<>();
+        bookingHistory = new ArrayList<>();
+    }
 
     public void addRoomType(String type, int count) {
         inventory.put(type, count);
     }
 
-    public synchronized void addRequest(Reservation r) {
-        bookingQueue.add(r);
+    public void addBooking(String guestName, String roomId) {
+        bookingHistory.add(new Reservation(guestName, roomId));
     }
 
-    public synchronized void processBooking() {
-        if (bookingQueue.isEmpty()) return;
-        Reservation r = bookingQueue.poll();
-        int available = inventory.getOrDefault(r.roomType, 0);
-        if (available > 0) {
-            inventory.put(r.roomType, available - 1);
-            System.out.println(Thread.currentThread().getName() +
-                    " SUCCESS: " + r.guestName + " booked " + r.roomType);
-        } else {
-            System.out.println(Thread.currentThread().getName() +
-                    " FAILED: " + r.guestName + " (No rooms)");
+    public void saveData() {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME));
+            oos.writeObject(this);
+            oos.close();
+            System.out.println("Data saved successfully.");
+        } catch (Exception e) {
+            System.out.println("Error saving data.");
         }
     }
 
-    class BookingThread extends Thread {
-        public void run() {
-            while (true) {
-                synchronized (BookMyStayApp.this) {
-                    if (bookingQueue.isEmpty()) break;
-                }
-                processBooking();
-            }
+    public static BookMyStayApp loadData() {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME));
+            BookMyStayApp app = (BookMyStayApp) ois.readObject();
+            ois.close();
+            System.out.println("Data loaded successfully.");
+            return app;
+        } catch (Exception e) {
+            System.out.println("No previous data found. Starting fresh.");
+            return new BookMyStayApp();
+        }
+    }
+
+    public void displayData() {
+        System.out.println("\nInventory:");
+        for (String type : inventory.keySet()) {
+            System.out.println(type + " -> " + inventory.get(type));
+        }
+
+        System.out.println("\nBooking History:");
+        for (Reservation r : bookingHistory) {
+            System.out.println("Guest: " + r.guestName + ", Room ID: " + r.roomId);
         }
     }
 
     public static void main(String[] args) {
-        BookMyStayApp app = new BookMyStayApp();
+        BookMyStayApp app = BookMyStayApp.loadData();
         app.addRoomType("Single", 2);
-        app.addRequest(new Reservation("Abhi", "Single"));
-        app.addRequest(new Reservation("Subha", "Single"));
-        app.addRequest(new Reservation("Vanmathi", "Single"));
-        Thread t1 = app.new BookingThread();
-        Thread t2 = app.new BookingThread();
-        t1.setName("Thread-1");
-        t2.setName("Thread-2");
-        t1.start();
-        t2.start();
+        app.addBooking("Abhi", "Single-1");
+        app.displayData();
+        app.saveData();
     }
 }
