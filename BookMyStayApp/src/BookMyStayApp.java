@@ -1,88 +1,47 @@
 import java.util.*;
 
-class Reservation {
-    String reservationId;
-    String guestName;
-    String roomType;
-
-    Reservation(String reservationId, String guestName, String roomType) {
-        this.reservationId = reservationId;
-        this.guestName = guestName;
-        this.roomType = roomType;
-    }
-
-    void display() {
-        System.out.println("ID: " + reservationId +
-                " | Guest: " + guestName +
-                " | Room: " + roomType);
+class InvalidBookingException extends Exception {
+    public InvalidBookingException(String message) {
+        super(message);
     }
 }
 
-class BookingHistory {
-    private List<Reservation> history = new ArrayList<>();
+public class HotelBookingAPP {
+    private HashMap<String, Integer> inventory;
 
-    void addReservation(Reservation r) {
-        history.add(r);
+    public HotelBookingAPP() {
+        inventory = new HashMap<>();
     }
 
-    List<Reservation> getAllReservations() {
-        return history;
+    public void addRoomType(String type, int count) {
+        inventory.put(type, count);
     }
-}
 
-class BookingReportService {
-
-    void showAllBookings(List<Reservation> history) {
-        System.out.println("Booking History:");
-
-        for (Reservation r : history) {
-            r.display();
+    public void validateBooking(String roomType) throws InvalidBookingException {
+        if (!inventory.containsKey(roomType)) {
+            throw new InvalidBookingException("Invalid room type: " + roomType);
+        }
+        if (inventory.get(roomType) <= 0) {
+            throw new InvalidBookingException("No rooms available for: " + roomType);
         }
     }
 
-    void showSummary(List<Reservation> history) {
-        Map<String, Integer> countMap = new HashMap<>();
-
-        for (Reservation r : history) {
-            countMap.put(r.roomType,
-                    countMap.getOrDefault(r.roomType, 0) + 1);
-        }
-
-        System.out.println("Booking Summary:");
-        for (String type : countMap.keySet()) {
-            System.out.println(type + " : " + countMap.get(type));
+    public void bookRoom(String guestName, String roomType) {
+        try {
+            validateBooking(roomType);
+            inventory.put(roomType, inventory.get(roomType) - 1);
+            System.out.println("Booking successful for " + guestName + " (" + roomType + ")");
+        } catch (InvalidBookingException e) {
+            System.out.println("Booking failed: " + e.getMessage());
         }
     }
-}
 
-class BookMyStayApp {
     public static void main(String[] args) {
-
-        String appName = "Book My Stay App";
-        String version = "Hotel Booking System v8.0";
-
-        System.out.println("=====================================");
-        System.out.println("        " + appName);
-        System.out.println("=====================================");
-        System.out.println("Version: " + version);
-        System.out.println("-------------------------------------");
-
-        BookingHistory history = new BookingHistory();
-
-        history.addReservation(new Reservation("R101", "Alice", "Single Room"));
-        history.addReservation(new Reservation("R102", "Bob", "Double Room"));
-        history.addReservation(new Reservation("R103", "Charlie", "Single Room"));
-        history.addReservation(new Reservation("R104", "David", "Suite Room"));
-
-        BookingReportService report = new BookingReportService();
-
-        report.showAllBookings(history.getAllReservations());
-
-        System.out.println("-------------------------------------");
-
-        report.showSummary(history.getAllReservations());
-
-        System.out.println("-------------------------------------");
-        System.out.println("System execution completed.");
+        HotelBookingAPP app = new HotelBookingAPP();
+        app.addRoomType("Single", 1);
+        app.addRoomType("Double", 0);
+        app.bookRoom("Abhi", "Single");
+        app.bookRoom("Subha", "Double");
+        app.bookRoom("Vanmathi", "Suite");
     }
 }
